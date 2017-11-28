@@ -1,0 +1,166 @@
+
+options {
+  /*UNICODE_INPUT = true;*/
+  /*JAVA_UNICODE_ESCAPE = false;*/
+  /*JAVA_UNICODE_ESCAPE = true;*/
+  ERROR_REPORTING = true;
+  STATIC = false;
+}
+
+PARSER_BEGIN(JSONMergeParser)
+package de.ovgu.cide.fstgen.parsers.generated_json_merge;
+
+import java.io.*;
+import java.util.*;
+import cide.gast.*;
+import cide.gparser.*;
+import de.ovgu.cide.fstgen.ast.*;
+
+public class JSONMergeParser extends AbstractFSTParser
+{
+ 	public JSONMergeParser(){}
+}
+
+PARSER_END(JSONMergeParser)
+
+/********************************************
+ * THE JSON TOKEN SPECIFICATION STARTS HERE *
+ ********************************************/
+
+SKIP : {
+  " "
+| "\t"
+| "\n"
+| "\r"
+| "\f"
+}
+
+//skip comments
+SKIP: {
+    <COMMENT_LINE: "//" (~["\n","\r"])* ("\n"|"\r"|"\r\n")>
+}
+SKIP: {
+    <COMMENT_BLOCK: "/*" (~["*"])* "*" ("*" | (~["*","/"] (~["*"])* "*"))* "/">
+}
+
+//number operators and separators
+TOKEN: {
+        <O_OPENBRACE: "{">
+    |   <O_CLOSEBRACE: "}">
+    |   <O_OPENBRACKET: "[">
+    |   <O_CLOSEBRACKET: "]">
+    |   <O_COMMA: ",">
+    |   <O_COLON: ":">
+    |   <O_DOT: ".">
+    |   <O_PLUS: "+">
+    |   <O_MINUS: "-">  
+}
+
+TOKEN: {
+        <#DIGIT: ["0" - "9"] >
+    |   <#NONZERO_DIGIT: ["1" - "9"] >
+    |   <#EXP: ["e", "E"] ( <O_PLUS > | <O_MINUS > )? >
+}
+
+//numbers
+TOKEN: {
+    <NUMBER: <INTEGER> | <INTEGER> <FRACTIONAL_DIGITS> | <INTEGER> <EXPONENT> | <INTEGER> <FRACTIONAL_DIGITS> <EXPONENT> >
+    |   <INTEGER: (<O_MINUS>)? ( <DIGIT> | <NONZERO_DIGIT> <DIGITS>) >
+    |   <FRACTIONAL_DIGITS: <O_DOT> <DIGITS > >
+    |   <EXPONENT: <EXP> <DIGITS> >
+    |   <DIGITS: ( <DIGIT> )+ >
+}
+
+
+TOKEN: {
+		<STRING: "\"" ( <ALLOWABLE_CHARACTERS> )* "\"" >
+        | <ALLOWABLE_CHARACTERS:(   
+	        (~["\"", "\\", "\u0000"-"\u001f"])
+	           | ("\\"
+	            ( ["u"] ["0"-"9","a"-"f", "A"-"F"] ["0"-"9","a"-"f", "A"-"F"] ["0"-"9","a"-"f", "A"-"F"] ["0"-"9","a"-"f", "A"-"F"]
+	                | ["\"", "\\", "b", "f", "n", "r", "t"]
+	                )
+	            )
+	        )
+	    >
+}
+FSTInfo JSONRoot(boolean inTerminal) : { Token first=null,t;FSTInfo n; 
+} { {first=getToken(1); productionStart(inTerminal); } (
+	n=Object(inTerminal){ replaceName(n);} {return productionEndNonTerminal("JSONRoot1","-","-");}
+ |
+	n=Array(inTerminal){ replaceName(n);} {return productionEndNonTerminal("JSONRoot2","-","-");}
+
+ )  }
+
+FSTInfo Object(boolean inTerminal) : { Token first=null,t;FSTInfo n; 
+} { {first=getToken(1); productionStart(inTerminal); } (
+	"{" [n=Members(inTerminal){ replaceName(n);}] "}" {return productionEndNonTerminal("Object","-","-");}
+
+ )  }
+
+FSTInfo Members(boolean inTerminal) : { Token first=null,t;FSTInfo n; 
+} { {first=getToken(1); productionStart(inTerminal); } (
+	n=Pair(inTerminal){ replaceName(n);} (n=CommaPair(inTerminal){ replaceName(n);})* {return productionEndNonTerminal("Members","-","-");}
+
+ )  }
+
+FSTInfo CommaPair(boolean inTerminal) : { Token first=null,t;FSTInfo n; 
+} { {first=getToken(1); productionStart(inTerminal); } (
+	"," n=Pair(inTerminal){ replaceName("Pair", n);}{ replaceName(n);} {return productionEndNonTerminal("CommaPair","{Pair}","{Pair}");}
+
+ )  }
+
+FSTInfo Pair(boolean inTerminal) : { Token first=null,t;FSTInfo n; 
+} { {first=getToken(1); productionStart(inTerminal); } (
+	n=String(inTerminal){ replaceName("String", n);}{ replaceName(n);} ":" n=Value(inTerminal){ replaceName(n);} {return productionEndNonTerminal("Pair","{String}","{String}");}
+
+ )  }
+
+FSTInfo Array(boolean inTerminal) : { Token first=null,t;FSTInfo n; 
+} { {first=getToken(1); productionStart(inTerminal); } (
+	"[" [n=Elements(inTerminal){ replaceName(n);}] "]" {return productionEndNonTerminal("Array","-","-");}
+
+ )  }
+
+FSTInfo Elements(boolean inTerminal) : { Token first=null,t;FSTInfo n; 
+} { {first=getToken(1); productionStart(inTerminal); } (
+	n=Value(inTerminal){ replaceName(n);} (LOOKAHEAD(2) n=CommaValue(inTerminal){ replaceName(n);})* {return productionEndNonTerminal("Elements","-","-");}
+
+ )  }
+
+FSTInfo CommaValue(boolean inTerminal) : { Token first=null,t;FSTInfo n; 
+} { {first=getToken(1); productionStart(inTerminal); } (
+	<O_COMMA> n=Value(inTerminal){ replaceName(n);} {return productionEndNonTerminal("CommaValue","-","-");}
+
+ )  }
+
+FSTInfo Value(boolean inTerminal) : { Token first=null,t;FSTInfo n; 
+} { {first=getToken(1); productionStart(inTerminal); } (
+	n=String(inTerminal){ replaceName(n);} {return productionEndNonTerminal("Value1","{Name}","{Name}");}
+ |
+	n=Number(inTerminal){ replaceName(n);} {return productionEndNonTerminal("Value2","{Name}","{Name}");}
+ |
+	n=Object(inTerminal){ replaceName(n);} {return productionEndNonTerminal("Value3","{Name}","{Name}");}
+ |
+	n=Array(inTerminal){ replaceName(n);} {return productionEndNonTerminal("Value4","{Name}","{Name}");}
+ |
+	"true"  {return productionEndNonTerminal("Value5","{Name}","{Name}");}
+ |
+	"false"  {return productionEndNonTerminal("Value6","{Name}","{Name}");}
+ |
+	"null"  {return productionEndNonTerminal("Value7","{Name}","{Name}");}
+
+ )  }
+
+FSTInfo Number(boolean inTerminal) : { Token first=null,t;FSTInfo n; 
+} { {first=getToken(1); productionStart(inTerminal); } (
+	t=<NUMBER>{ replaceName(new FSTInfo("<NUMBER>",t.image));} {return productionEndTerminal("Number","{<NUMBER>}","{<NUMBER>}","Replacement","LineBased",first,token);}
+
+ )  }
+
+FSTInfo String(boolean inTerminal) : { Token first=null,t;FSTInfo n; 
+} { {first=getToken(1); productionStart(inTerminal); } (
+	t=<STRING>{ replaceName(new FSTInfo("<STRING>",t.image));} {return productionEndTerminal("String","{<STRING>}","{<STRING>}","Replacement","LineBased",first,token);}
+
+ )  }
+

@@ -1,0 +1,163 @@
+
+options {
+  /*UNICODE_INPUT = true;*/
+  /*JAVA_UNICODE_ESCAPE = false;*/
+  /*JAVA_UNICODE_ESCAPE = true;*/
+  ERROR_REPORTING = true;
+  STATIC = false;
+}
+
+PARSER_BEGIN(JSONMergeParser)
+package de.ovgu.cide.fstgen.parsers.generated_json_merge;
+
+import java.io.*;
+import java.util.*;
+import cide.gast.*;
+import cide.gparser.*;
+import de.ovgu.cide.fstgen.ast.*;
+
+public class JSONMergeParser extends AbstractFSTParser
+{
+ 	public JSONMergeParser(){}
+}
+
+PARSER_END(JSONMergeParser)
+
+/********************************************
+ * THE JSON TOKEN SPECIFICATION STARTS HERE *
+ ********************************************/
+
+SKIP : {
+  " "
+| "\t"
+| "\n"
+| "\r"
+| "\f"
+}
+
+//skip comments
+SKIP: {
+    <COMMENT_LINE: "//" (~["\n","\r"])* ("\n"|"\r"|"\r\n")>
+}
+SKIP: {
+    <COMMENT_BLOCK: "/*" (~["*"])* "*" ("*" | (~["*","/"] (~["*"])* "*"))* "/">
+}
+
+//number operators and separators
+TOKEN: {
+        <O_OPENBRACE: "{">
+    |   <O_CLOSEBRACE: "}">
+    |   <O_OPENBRACKET: "[">
+    |   <O_CLOSEBRACKET: "]">
+    |   <O_COMMA: ",">
+    |   <O_COLON: ":">
+    |   <O_DOT: ".">
+    |   <O_PLUS: "+">
+    |   <O_MINUS: "-">  
+}
+
+TOKEN: {
+        <#DIGIT: ["0" - "9"] >
+    |   <#NONZERO_DIGIT: ["1" - "9"] >
+    |   <#EXP: ["e", "E"] ( <O_PLUS > | <O_MINUS > )? >
+}
+
+//numbers
+TOKEN: {
+    <NUMBER: <INTEGER> | <INTEGER> <FRACTIONAL_DIGITS> | <INTEGER> <EXPONENT> | <INTEGER> <FRACTIONAL_DIGITS> <EXPONENT> >
+    |   <INTEGER: (<O_MINUS>)? ( <DIGIT> | <NONZERO_DIGIT> <DIGITS>) >
+    |   <FRACTIONAL_DIGITS: <O_DOT> <DIGITS > >
+    |   <EXPONENT: <EXP> <DIGITS> >
+    |   <DIGITS: ( <DIGIT> )+ >
+}
+
+
+TOKEN: {
+		<STRING: "\"" ( <ALLOWABLE_CHARACTERS> )* "\"" >
+        | <ALLOWABLE_CHARACTERS:(   
+	        (~["\"", "\\", "\u0000"-"\u001f"])
+	           | ("\\"
+	            ( ["u"] ["0"-"9","a"-"f", "A"-"F"] ["0"-"9","a"-"f", "A"-"F"] ["0"-"9","a"-"f", "A"-"F"] ["0"-"9","a"-"f", "A"-"F"]
+	                | ["\"", "\\", "b", "f", "n", "r", "t"]
+	                )
+	            )
+	        )
+	    >
+}
+
+GRAMMARSTART
+
+/*****************************************
+ * THE JSON LANGUAGE GRAMMAR STARTS HERE *
+ *****************************************/
+
+@FSTNonTerminal()
+JSONRoot:
+	Object 
+	| 
+	Array
+;
+
+@FSTNonTerminal()
+Object:
+	 "{" @! (Members)? "}" 
+;
+
+@FSTNonTerminal()
+Members:
+	 @+ Pair (CommaPair)* @!@- 
+;
+
+@FSTNonTerminal(name="{Pair}")
+CommaPair:
+	"," @! Pair
+;
+
+@FSTNonTerminal(name="{String}") 
+Pair: 
+    String ":" Value
+;
+
+@FSTNonTerminal()
+Array:
+	 @+ "[" (Elements)? "]" @- 
+;
+
+@FSTNonTerminal()
+Elements:
+		Value (LL(2) CommaValue)*
+;
+
+@FSTNonTerminal()
+CommaValue:
+	<O_COMMA>  Value
+;
+
+
+@FSTNonTerminal(name="{Name}") 
+Value:
+      String
+	  |
+	  Number
+	  |
+	  Object
+	  |
+	  Array
+	  |
+	  "true"
+	  |
+	  "false"
+	  |
+	  "null"
+;
+
+@FSTTerminal(name="{<NUMBER>}",merge="LineBased") @FSTExportName("{<NUMBER>}")
+Number: 
+	<NUMBER>
+;
+
+
+@FSTTerminal(name="{<STRING>}", merge="LineBased")  @FSTExportName("{<STRING>}")
+String: 
+	<STRING> 
+;
