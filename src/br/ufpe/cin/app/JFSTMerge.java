@@ -208,15 +208,15 @@ public class JFSTMerge {
 	}
 
 	public static void main(String[] args) {
-//		JFSTMerge merger = new JFSTMerge();
-//		merger.run(args);
-//		System.exit(conflictState);
+		JFSTMerge merger = new JFSTMerge();
+		merger.run(args);
+		System.exit(conflictState);
 
-				new JFSTMerge().mergeFiles(
-						new File("C:/mergefiles/left.json"),
-						new File("C:/mergefiles/base.json"),
-						new File("C:/mergefiles/right.json"),
-						null);
+//				new JFSTMerge().mergeFiles(
+//						new File("C:/mergefiles/left.json"),
+//						new File("C:/mergefiles/base.json"),
+//						new File("C:/mergefiles/right.json"),
+//						null);
 
 		/*		try {
 			List<String> listRevisions = new ArrayList<>();

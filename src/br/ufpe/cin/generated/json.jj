@@ -100,19 +100,15 @@ FSTInfo Object(boolean inTerminal) : { Token first=null,t;FSTInfo n;
 
 FSTInfo Members(boolean inTerminal) : { Token first=null,t;FSTInfo n; 
 } { {first=getToken(1); productionStart(inTerminal); } (
-	n=Pair(inTerminal){ replaceName(n);} (n=CommaPair(inTerminal){ replaceName(n);})* {return productionEndNonTerminal("Members","-","-");}
-
- )  }
-
-FSTInfo CommaPair(boolean inTerminal) : { Token first=null,t;FSTInfo n; 
-} { {first=getToken(1); productionStart(inTerminal); } (
-	"," n=Pair(inTerminal){ replaceName("Pair", n);}{ replaceName(n);} {return productionEndNonTerminal("CommaPair","{Pair}","{Pair}");}
+	n=Pair(inTerminal){ replaceName(n);} (LOOKAHEAD(2) n=Pair(inTerminal){ replaceName(n);})* {return productionEndNonTerminal("Members","-","-");}
 
  )  }
 
 FSTInfo Pair(boolean inTerminal) : { Token first=null,t;FSTInfo n; 
 } { {first=getToken(1); productionStart(inTerminal); } (
-	n=String(inTerminal){ replaceName("String", n);}{ replaceName(n);} ":" n=Value(inTerminal){ replaceName(n);} {return productionEndNonTerminal("Pair","{String}","{String}");}
+	n=String(inTerminal){ replaceName("String", n);}{ replaceName(n);} ":" n=Value(inTerminal){ replaceName(n);} {return productionEndNonTerminal("Pair1","{String}","{String}");}
+ |
+	"," n=String(inTerminal){ replaceName("String", n);}{ replaceName(n);} ":" n=Value(inTerminal){ replaceName(n);} {return productionEndNonTerminal("Pair2","{String}","{String}");}
 
  )  }
 
@@ -130,37 +126,37 @@ FSTInfo Elements(boolean inTerminal) : { Token first=null,t;FSTInfo n;
 
 FSTInfo CommaValue(boolean inTerminal) : { Token first=null,t;FSTInfo n; 
 } { {first=getToken(1); productionStart(inTerminal); } (
-	<O_COMMA> n=Value(inTerminal){ replaceName(n);} {return productionEndNonTerminal("CommaValue","-","-");}
+	"," n=Value(inTerminal){ replaceName(n);} {return productionEndNonTerminal("CommaValue","-","-");}
 
  )  }
 
 FSTInfo Value(boolean inTerminal) : { Token first=null,t;FSTInfo n; 
 } { {first=getToken(1); productionStart(inTerminal); } (
-	n=String(inTerminal){ replaceName(n);} {return productionEndNonTerminal("Value1","{Name}","{Name}");}
+	n=String(inTerminal){ replaceName(n);} {return productionEndNonTerminal("Value1","String","String");}
  |
-	n=Number(inTerminal){ replaceName(n);} {return productionEndNonTerminal("Value2","{Name}","{Name}");}
+	n=Number(inTerminal){ replaceName(n);} {return productionEndNonTerminal("Value2","Number","Number");}
  |
-	n=Object(inTerminal){ replaceName(n);} {return productionEndNonTerminal("Value3","{Name}","{Name}");}
+	n=Object(inTerminal){ replaceName(n);} {return productionEndNonTerminal("Value3","Object","Object");}
  |
-	n=Array(inTerminal){ replaceName(n);} {return productionEndNonTerminal("Value4","{Name}","{Name}");}
+	n=Array(inTerminal){ replaceName(n);} {return productionEndNonTerminal("Value4","Array","Array");}
  |
-	"true"  {return productionEndNonTerminal("Value5","{Name}","{Name}");}
+	"true"  {return productionEndNonTerminal("Value5","true","true");}
  |
-	"false"  {return productionEndNonTerminal("Value6","{Name}","{Name}");}
+	"false"  {return productionEndNonTerminal("Value6","false","false");}
  |
-	"null"  {return productionEndNonTerminal("Value7","{Name}","{Name}");}
+	"null"  {return productionEndNonTerminal("Value7","null","null");}
 
  )  }
 
 FSTInfo Number(boolean inTerminal) : { Token first=null,t;FSTInfo n; 
 } { {first=getToken(1); productionStart(inTerminal); } (
-	t=<NUMBER>{ replaceName(new FSTInfo("<NUMBER>",t.image));} {return productionEndTerminal("Number","{<NUMBER>}","{<NUMBER>}","Replacement","LineBased",first,token);}
+	t=<NUMBER>{ replaceName(new FSTInfo("<NUMBER>",t.image));} {return productionEndTerminal("Number","Number","{<NUMBER>}","Replacement","LineBased",first,token);}
 
  )  }
 
 FSTInfo String(boolean inTerminal) : { Token first=null,t;FSTInfo n; 
 } { {first=getToken(1); productionStart(inTerminal); } (
-	t=<STRING>{ replaceName(new FSTInfo("<STRING>",t.image));} {return productionEndTerminal("String","{<STRING>}","{<STRING>}","Replacement","LineBased",first,token);}
+	t=<STRING>{ replaceName(new FSTInfo("<STRING>",t.image));} {return productionEndTerminal("String","String","{<STRING>}","Replacement","LineBased",first,token);}
 
  )  }
 

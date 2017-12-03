@@ -55,27 +55,30 @@ public class SimplePrintVisitor extends AbstractFSTPrintVisitor  {
 		}
 		if (nonTerminal.getType().equals("Members")) {
 			printFeatures(nonTerminal,true);
+			Iterator<FSTNode> listElements = getChildren(nonTerminal, "Pair").iterator();
 			hintIncIndent();
-			{
-				FSTNode v=getChild(nonTerminal, "Pair");
-				if (v!=null) {
-					v.accept(this);
-				}
+			if (listElements.hasNext()) {
+				listElements.next().accept(this);
 			}
-			for (FSTNode v : getChildren(nonTerminal,"CommaPair")) {
-				v.accept(this);
+			while (listElements.hasNext()) {
+				listElements.next().accept(this);
 			}
 			hintNewLine();
 			hintDecIndent();
 			printFeatures(nonTerminal,false);
 			return false;
 		}
-		if (nonTerminal.getType().equals("CommaPair")) {
+		if (nonTerminal.getType().equals("Pair1")) {
 			printFeatures(nonTerminal,true);
-			printToken(",");
-			hintNewLine();
 			{
-				FSTNode v=getChild(nonTerminal, "Pair");
+				FSTNode v=getChild(nonTerminal, "String");
+				if (v!=null) {
+					v.accept(this);
+				}
+			}
+			printToken(":");
+			{
+				FSTNode v=getChild(nonTerminal, "Value");
 				if (v!=null) {
 					v.accept(this);
 				}
@@ -83,8 +86,10 @@ public class SimplePrintVisitor extends AbstractFSTPrintVisitor  {
 			printFeatures(nonTerminal,false);
 			return false;
 		}
-		if (nonTerminal.getType().equals("Pair")) {
+		if (nonTerminal.getType().equals("Pair2")) {
 			printFeatures(nonTerminal,true);
+			printToken(",");
+			hintNewLine();
 			{
 				FSTNode v=getChild(nonTerminal, "String");
 				if (v!=null) {
@@ -132,6 +137,7 @@ public class SimplePrintVisitor extends AbstractFSTPrintVisitor  {
 		}
 		if (nonTerminal.getType().equals("CommaValue")) {
 			printFeatures(nonTerminal,true);
+			printToken(",");
 			{
 				FSTNode v=getChild(nonTerminal, "Value");
 				if (v!=null) {
@@ -209,7 +215,9 @@ public class SimplePrintVisitor extends AbstractFSTPrintVisitor  {
 		if (type.equals(expectedType)) return true;
 		if (type.equals("Value3") && expectedType.equals("Value")) return true;
 		if (type.equals("Value2") && expectedType.equals("Value")) return true;
+		if (type.equals("Pair1") && expectedType.equals("Pair")) return true;
 		if (type.equals("Value5") && expectedType.equals("Value")) return true;
+		if (type.equals("Pair2") && expectedType.equals("Pair")) return true;
 		if (type.equals("Value4") && expectedType.equals("Value")) return true;
 		if (type.equals("Value7") && expectedType.equals("Value")) return true;
 		if (type.equals("Value6") && expectedType.equals("Value")) return true;

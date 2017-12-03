@@ -105,17 +105,14 @@ Object:
 
 @FSTNonTerminal()
 Members:
-	 @+ Pair (CommaPair)* @!@- 
+	 @+ &LIPair (LL(2) &LIPair)* @!@- 
 ;
 
-@FSTNonTerminal(name="{Pair}")
-CommaPair:
-	"," @! Pair
-;
-
-@FSTNonTerminal(name="{String}") 
+@FSTNonTerminal(name="{String}") @FSTExportName("{String}")
 Pair: 
-    String ":" Value
+	String ":" Value
+	|
+    "," @! String ":" Value 
 ;
 
 @FSTNonTerminal()
@@ -130,34 +127,40 @@ Elements:
 
 @FSTNonTerminal()
 CommaValue:
-	<O_COMMA>  Value
+	","  Value
 ;
 
 
-@FSTNonTerminal(name="{Name}") 
 Value:
+	  @FSTNonTerminal(name="String") 
       String
 	  |
+	  @FSTNonTerminal(name="Number") 
 	  Number
 	  |
+	  @FSTNonTerminal(name="Object") 
 	  Object
 	  |
+	  @FSTNonTerminal(name="Array") 
 	  Array
 	  |
-	  "true"
+	  @FSTNonTerminal(name="true") 
+	  "true" 
 	  |
+	  @FSTNonTerminal(name="false") 
 	  "false"
 	  |
+	  @FSTNonTerminal(name="null") 
 	  "null"
 ;
 
-@FSTTerminal(name="{<NUMBER>}",merge="LineBased") @FSTExportName("{<NUMBER>}")
+@FSTTerminal(name="Number",merge="LineBased") @FSTExportName("{<NUMBER>}")
 Number: 
 	<NUMBER>
 ;
 
 
-@FSTTerminal(name="{<STRING>}", merge="LineBased")  @FSTExportName("{<STRING>}")
+@FSTTerminal(name="String", merge="LineBased")  @FSTExportName("{<STRING>}")
 String: 
 	<STRING> 
 ;

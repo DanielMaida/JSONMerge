@@ -37,6 +37,7 @@ public class JSONMergeParser extends AbstractFSTParser implements JSONMergeParse
      first=getToken(1); productionStart(inTerminal);
     jj_consume_token(O_OPENBRACE);
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case O_COMMA:
     case STRING:
       n = Members(inTerminal);
                                     replaceName(n);
@@ -57,42 +58,46 @@ public class JSONMergeParser extends AbstractFSTParser implements JSONMergeParse
                             replaceName(n);
     label_1:
     while (true) {
-      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case O_COMMA:
+      if (jj_2_1(2)) {
         ;
-        break;
-      default:
-        jj_la1[2] = jj_gen;
+      } else {
         break label_1;
       }
-      n = CommaPair(inTerminal);
-                                                                       replaceName(n);
+      n = Pair(inTerminal);
+                                                                               replaceName(n);
     }
-                                                                                           {if (true) return productionEndNonTerminal("Members","-","-");}
-    throw new Error("Missing return statement in function");
-  }
-
-  final public FSTInfo CommaPair(boolean inTerminal) throws ParseException {
-                                          Token first=null,t;FSTInfo n;
-     first=getToken(1); productionStart(inTerminal);
-    jj_consume_token(O_COMMA);
-    n = Pair(inTerminal);
-                                replaceName("Pair", n);
-                                                          replaceName(n);
-                                                                            {if (true) return productionEndNonTerminal("CommaPair","{Pair}","{Pair}");}
+                                                                                                   {if (true) return productionEndNonTerminal("Members","-","-");}
     throw new Error("Missing return statement in function");
   }
 
   final public FSTInfo Pair(boolean inTerminal) throws ParseException {
                                      Token first=null,t;FSTInfo n;
      first=getToken(1); productionStart(inTerminal);
-    n = String(inTerminal);
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case STRING:
+      n = String(inTerminal);
                               replaceName("String", n);
                                                           replaceName(n);
-    jj_consume_token(O_COLON);
-    n = Value(inTerminal);
+      jj_consume_token(O_COLON);
+      n = Value(inTerminal);
                                                                                                     replaceName(n);
-                                                                                                                      {if (true) return productionEndNonTerminal("Pair","{String}","{String}");}
+                                                                                                                      {if (true) return productionEndNonTerminal("Pair1","{String}","{String}");}
+      break;
+    case O_COMMA:
+      jj_consume_token(O_COMMA);
+      n = String(inTerminal);
+                                  replaceName("String", n);
+                                                              replaceName(n);
+      jj_consume_token(O_COLON);
+      n = Value(inTerminal);
+                                                                                                        replaceName(n);
+                                                                                                                          {if (true) return productionEndNonTerminal("Pair2","{String}","{String}");}
+      break;
+    default:
+      jj_la1[2] = jj_gen;
+      jj_consume_token(-1);
+      throw new ParseException();
+    }
     throw new Error("Missing return statement in function");
   }
 
@@ -127,7 +132,7 @@ public class JSONMergeParser extends AbstractFSTParser implements JSONMergeParse
                              replaceName(n);
     label_2:
     while (true) {
-      if (jj_2_1(2)) {
+      if (jj_2_2(2)) {
         ;
       } else {
         break label_2;
@@ -144,8 +149,8 @@ public class JSONMergeParser extends AbstractFSTParser implements JSONMergeParse
      first=getToken(1); productionStart(inTerminal);
     jj_consume_token(O_COMMA);
     n = Value(inTerminal);
-                                       replaceName(n);
-                                                         {if (true) return productionEndNonTerminal("CommaValue","-","-");}
+                                 replaceName(n);
+                                                   {if (true) return productionEndNonTerminal("CommaValue","-","-");}
     throw new Error("Missing return statement in function");
   }
 
@@ -156,34 +161,34 @@ public class JSONMergeParser extends AbstractFSTParser implements JSONMergeParse
     case STRING:
       n = String(inTerminal);
                               replaceName(n);
-                                                {if (true) return productionEndNonTerminal("Value1","{Name}","{Name}");}
+                                                {if (true) return productionEndNonTerminal("Value1","String","String");}
       break;
     case NUMBER:
       n = Number(inTerminal);
                               replaceName(n);
-                                                {if (true) return productionEndNonTerminal("Value2","{Name}","{Name}");}
+                                                {if (true) return productionEndNonTerminal("Value2","Number","Number");}
       break;
     case O_OPENBRACE:
       n = Object(inTerminal);
                               replaceName(n);
-                                                {if (true) return productionEndNonTerminal("Value3","{Name}","{Name}");}
+                                                {if (true) return productionEndNonTerminal("Value3","Object","Object");}
       break;
     case O_OPENBRACKET:
       n = Array(inTerminal);
                              replaceName(n);
-                                               {if (true) return productionEndNonTerminal("Value4","{Name}","{Name}");}
+                                               {if (true) return productionEndNonTerminal("Value4","Array","Array");}
       break;
     case 27:
       jj_consume_token(27);
-                 {if (true) return productionEndNonTerminal("Value5","{Name}","{Name}");}
+                 {if (true) return productionEndNonTerminal("Value5","true","true");}
       break;
     case 28:
       jj_consume_token(28);
-                  {if (true) return productionEndNonTerminal("Value6","{Name}","{Name}");}
+                  {if (true) return productionEndNonTerminal("Value6","false","false");}
       break;
     case 29:
       jj_consume_token(29);
-                 {if (true) return productionEndNonTerminal("Value7","{Name}","{Name}");}
+                 {if (true) return productionEndNonTerminal("Value7","null","null");}
       break;
     default:
       jj_la1[4] = jj_gen;
@@ -198,7 +203,7 @@ public class JSONMergeParser extends AbstractFSTParser implements JSONMergeParse
      first=getToken(1); productionStart(inTerminal);
     t = jj_consume_token(NUMBER);
                     replaceName(new FSTInfo("<NUMBER>",t.image));
-                                                                    {if (true) return productionEndTerminal("Number","{<NUMBER>}","{<NUMBER>}","Replacement","LineBased",first,token);}
+                                                                    {if (true) return productionEndTerminal("Number","Number","{<NUMBER>}","Replacement","LineBased",first,token);}
     throw new Error("Missing return statement in function");
   }
 
@@ -207,7 +212,7 @@ public class JSONMergeParser extends AbstractFSTParser implements JSONMergeParse
      first=getToken(1); productionStart(inTerminal);
     t = jj_consume_token(STRING);
                     replaceName(new FSTInfo("<STRING>",t.image));
-                                                                    {if (true) return productionEndTerminal("String","{<STRING>}","{<STRING>}","Replacement","LineBased",first,token);}
+                                                                    {if (true) return productionEndTerminal("String","String","{<STRING>}","Replacement","LineBased",first,token);}
     throw new Error("Missing return statement in function");
   }
 
@@ -218,34 +223,98 @@ public class JSONMergeParser extends AbstractFSTParser implements JSONMergeParse
     finally { jj_save(0, xla); }
   }
 
-  final private boolean jj_3R_11() {
-    if (jj_scan_token(29)) return true;
+  final private boolean jj_2_2(int xla) {
+    jj_la = xla; jj_lastpos = jj_scanpos = token;
+    try { return !jj_3_2(); }
+    catch(LookaheadSuccess ls) { return true; }
+    finally { jj_save(1, xla); }
+  }
+
+  final private boolean jj_3R_7() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_9()) {
+    jj_scanpos = xsp;
+    if (jj_3R_10()) {
+    jj_scanpos = xsp;
+    if (jj_3R_11()) {
+    jj_scanpos = xsp;
+    if (jj_3R_12()) {
+    jj_scanpos = xsp;
+    if (jj_3R_13()) {
+    jj_scanpos = xsp;
+    if (jj_3R_14()) {
+    jj_scanpos = xsp;
+    if (jj_3R_15()) return true;
+    }
+    }
+    }
+    }
+    }
+    }
     return false;
   }
 
-  final private boolean jj_3R_3() {
+  final private boolean jj_3R_4() {
     if (jj_scan_token(O_COMMA)) return true;
+    if (jj_3R_7()) return true;
+    return false;
+  }
+
+  final private boolean jj_3_2() {
     if (jj_3R_4()) return true;
     return false;
   }
 
-  final private boolean jj_3R_10() {
-    if (jj_scan_token(28)) return true;
+  final private boolean jj_3R_18() {
+    if (jj_scan_token(O_OPENBRACKET)) return true;
     return false;
   }
 
-  final private boolean jj_3R_9() {
-    if (jj_scan_token(27)) return true;
+  final private boolean jj_3R_6() {
+    if (jj_scan_token(O_COMMA)) return true;
+    if (jj_3R_8()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_5() {
+    if (jj_3R_8()) return true;
+    if (jj_scan_token(O_COLON)) return true;
     return false;
   }
 
   final private boolean jj_3R_8() {
-    if (jj_3R_15()) return true;
+    if (jj_scan_token(STRING)) return true;
     return false;
   }
 
-  final private boolean jj_3R_7() {
-    if (jj_3R_14()) return true;
+  final private boolean jj_3R_3() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_5()) {
+    jj_scanpos = xsp;
+    if (jj_3R_6()) return true;
+    }
+    return false;
+  }
+
+  final private boolean jj_3R_16() {
+    if (jj_scan_token(NUMBER)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_15() {
+    if (jj_scan_token(29)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_14() {
+    if (jj_scan_token(28)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_13() {
+    if (jj_scan_token(27)) return true;
     return false;
   }
 
@@ -254,58 +323,28 @@ public class JSONMergeParser extends AbstractFSTParser implements JSONMergeParse
     return false;
   }
 
-  final private boolean jj_3R_6() {
-    if (jj_3R_13()) return true;
+  final private boolean jj_3R_12() {
+    if (jj_3R_18()) return true;
     return false;
   }
 
-  final private boolean jj_3R_15() {
-    if (jj_scan_token(O_OPENBRACKET)) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_5() {
-    if (jj_3R_12()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_14() {
+  final private boolean jj_3R_17() {
     if (jj_scan_token(O_OPENBRACE)) return true;
     return false;
   }
 
-  final private boolean jj_3R_12() {
-    if (jj_scan_token(STRING)) return true;
+  final private boolean jj_3R_11() {
+    if (jj_3R_17()) return true;
     return false;
   }
 
-  final private boolean jj_3R_4() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_5()) {
-    jj_scanpos = xsp;
-    if (jj_3R_6()) {
-    jj_scanpos = xsp;
-    if (jj_3R_7()) {
-    jj_scanpos = xsp;
-    if (jj_3R_8()) {
-    jj_scanpos = xsp;
-    if (jj_3R_9()) {
-    jj_scanpos = xsp;
-    if (jj_3R_10()) {
-    jj_scanpos = xsp;
-    if (jj_3R_11()) return true;
-    }
-    }
-    }
-    }
-    }
-    }
+  final private boolean jj_3R_10() {
+    if (jj_3R_16()) return true;
     return false;
   }
 
-  final private boolean jj_3R_13() {
-    if (jj_scan_token(NUMBER)) return true;
+  final private boolean jj_3R_9() {
+    if (jj_3R_8()) return true;
     return false;
   }
 
@@ -323,9 +362,9 @@ public class JSONMergeParser extends AbstractFSTParser implements JSONMergeParse
       jj_la1_0();
    }
    private static void jj_la1_0() {
-      jj_la1_0 = new int[] {0x500,0x2000000,0x1000,0x3a100500,0x3a100500,};
+      jj_la1_0 = new int[] {0x500,0x2001000,0x2001000,0x3a100500,0x3a100500,};
    }
-  final private JJCalls[] jj_2_rtns = new JJCalls[1];
+  final private JJCalls[] jj_2_rtns = new JJCalls[2];
   private boolean jj_rescan = false;
   private int jj_gc = 0;
 
@@ -514,7 +553,7 @@ public class JSONMergeParser extends AbstractFSTParser implements JSONMergeParse
 
   final private void jj_rescan_token() {
     jj_rescan = true;
-    for (int i = 0; i < 1; i++) {
+    for (int i = 0; i < 2; i++) {
     try {
       JJCalls p = jj_2_rtns[i];
       do {
@@ -522,6 +561,7 @@ public class JSONMergeParser extends AbstractFSTParser implements JSONMergeParse
           jj_la = p.arg; jj_lastpos = jj_scanpos = p.first;
           switch (i) {
             case 0: jj_3_1(); break;
+            case 1: jj_3_2(); break;
           }
         }
         p = p.next;
